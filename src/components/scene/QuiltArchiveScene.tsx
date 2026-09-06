@@ -58,13 +58,13 @@ export default function QuiltArchiveScene({ projects }: { projects: QuiltProject
         >
           <div aria-hidden className="flex-shrink-0" style={{ width: "clamp(24px, 6vw, 120px)" }} />
 
-          {projects.map((project, index) => (
+          {projects.map((project) => (
             <div
               key={project.id}
               className="flex-shrink-0 aspect-square"
               style={{ width: "clamp(240px, 34vw, 620px)" }}
             >
-              <QuiltBlock project={project} index={index} className="h-full w-full rounded-[2px]" />
+              <QuiltBlock project={project} className="h-full w-full rounded-[2px]" />
             </div>
           ))}
 

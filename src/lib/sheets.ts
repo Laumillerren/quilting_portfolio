@@ -94,7 +94,6 @@ function rowToProject(row: SheetRow, index: number): QuiltProject {
     lessonsLearned: row.lessons_learned || undefined,
     photoGallery: gallery.length > 0 ? gallery : [row.cover_image?.trim() || fallbackCover],
     featured: /^(true|yes|1)$/i.test(row.featured ?? ""),
-    blockTemplate: (row.block_template as QuiltProject["blockTemplate"]) || undefined,
   };
 }
 
