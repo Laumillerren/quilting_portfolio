@@ -18,6 +18,9 @@ export default function Nav() {
         <Link href="/#collection" className="transition-colors hover:text-[var(--charcoal)]">
           Works
         </Link>
+        <Link href="/timeline" className="transition-colors hover:text-[var(--charcoal)]">
+          Timeline
+        </Link>
         <Link href="/about" className="transition-colors hover:text-[var(--charcoal)]">
           About
         </Link>
