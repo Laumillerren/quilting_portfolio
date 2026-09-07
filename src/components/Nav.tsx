@@ -11,12 +11,9 @@ export default function Nav() {
         </span>
       </Link>
 
-      <nav className="pointer-events-auto flex items-center gap-5 text-[11px] uppercase tracking-[0.14em] text-[var(--charcoal)]/70 md:gap-8 md:text-xs">
+      <nav className="pointer-events-auto flex items-center gap-5 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--charcoal)]/85 md:gap-8 md:text-xs">
         <Link href="/" className="transition-colors hover:text-[var(--charcoal)]">
           Index
-        </Link>
-        <Link href="/#collection" className="transition-colors hover:text-[var(--charcoal)]">
-          Works
         </Link>
         <Link href="/timeline" className="transition-colors hover:text-[var(--charcoal)]">
           Timeline
