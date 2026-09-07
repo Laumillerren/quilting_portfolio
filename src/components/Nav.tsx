@@ -21,6 +21,9 @@ export default function Nav() {
         <Link href="/about" className="transition-colors hover:text-[var(--charcoal)]">
           About
         </Link>
+        <Link href="/admin" className="transition-colors hover:text-[var(--charcoal)]">
+          Admin
+        </Link>
       </nav>
     </header>
   );
