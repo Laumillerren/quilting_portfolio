@@ -1,8 +1,6 @@
 import Link from "next/link";
-import SmartImage from "@/components/SmartImage";
 import { getAllProjects } from "@/lib/sheets";
 import { buildTimeline } from "@/lib/timeline";
-import { resolveImageUrl } from "@/lib/imageUrl";
 import type { QuiltProject } from "@/lib/types";
 
 export const metadata = {
@@ -13,21 +11,14 @@ function ProjectRow({ project }: { project: QuiltProject }) {
   return (
     <Link
       href={`/quilts/${project.slug}`}
-      className="group flex items-center gap-4 border-b border-[var(--border)] py-3.5 transition-colors hover:border-[var(--charcoal)]/30"
+      className="group flex items-baseline justify-between gap-4 border-b border-[var(--border)] py-3 transition-colors hover:border-[var(--charcoal)]/30"
     >
-      <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden bg-[var(--cream)]">
-        <SmartImage
-          src={resolveImageUrl(project.coverImage)}
-          alt={project.projectName}
-          fill
-          sizes="56px"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-serif text-base italic text-[var(--charcoal)]">{project.projectName}</p>
-        {project.quiltType && <p className="truncate text-xs text-[var(--charcoal)]/50">{project.quiltType}</p>}
-      </div>
+      <span className="min-w-0 flex-1">
+        <span className="font-serif text-base italic text-[var(--charcoal)] group-hover:underline">
+          {project.projectName}
+        </span>
+        {project.quiltType && <span className="ml-2 text-xs text-[var(--charcoal)]/45">{project.quiltType}</span>}
+      </span>
       <span className="flex-shrink-0 text-[10px] uppercase tracking-[0.12em] text-[var(--charcoal)]/45">
         {project.status}
       </span>
@@ -46,8 +37,8 @@ function Section({
 }) {
   if (count === 0) return null;
   return (
-    <section className="mb-16">
-      <div className="mb-4 flex items-baseline justify-between">
+    <section className="mb-14">
+      <div className="mb-3 flex items-baseline justify-between">
         <h2 className="font-serif text-xl italic text-[var(--charcoal)]">{title}</h2>
         <span className="text-xs text-[var(--charcoal)]/45">{count}</span>
       </div>
