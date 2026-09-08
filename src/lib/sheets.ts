@@ -146,11 +146,6 @@ export async function getAllProjects(): Promise<QuiltProject[]> {
   return fromSheet ?? mockProjects;
 }
 
-export async function getProjectBySlug(slug: string): Promise<QuiltProject | undefined> {
-  const projects = await getAllProjects();
-  return projects.find((p) => p.slug === slug);
-}
-
 export async function getFeaturedProjects(): Promise<QuiltProject[]> {
   const projects = await getAllProjects();
   const featured = projects.filter((p) => p.featured);

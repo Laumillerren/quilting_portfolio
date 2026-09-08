@@ -1,7 +1,10 @@
 import Link from "next/link";
+import PhotoGalleryLightbox from "@/components/PhotoGalleryLightbox";
 import SmartImage from "@/components/SmartImage";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import type { QuiltProject } from "@/lib/types";
+
+type AdjacentProject = Pick<QuiltProject, "slug" | "projectName">;
 
 function InfoRow({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
@@ -22,7 +25,15 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function QuiltProjectDetail({ project }: { project: QuiltProject }) {
+export default function QuiltProjectDetail({
+  project,
+  prevProject,
+  nextProject,
+}: {
+  project: QuiltProject;
+  prevProject?: AdjacentProject;
+  nextProject?: AdjacentProject;
+}) {
   const hero = resolveImageUrl(project.coverImage);
   const gallery = project.photoGallery.map(resolveImageUrl).filter(Boolean);
 
@@ -138,20 +149,30 @@ export default function QuiltProjectDetail({ project }: { project: QuiltProject 
 
       {gallery.length > 0 && (
         <Section title="Photo Archive">
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-            {gallery.map((src, i) => (
-              <div key={i} className="relative aspect-[4/5] overflow-hidden bg-[var(--cream)]">
-                <SmartImage
-                  src={src}
-                  alt={`${project.projectName} — detail ${i + 1}`}
-                  fill
-                  sizes="(max-width: 768px) 50vw, 300px"
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
+          <PhotoGalleryLightbox images={gallery} altPrefix={project.projectName} />
         </Section>
+      )}
+
+      {(prevProject || nextProject) && (
+        <nav className="mt-14 flex items-center justify-between border-t border-[var(--border)] pt-8 text-[11px] uppercase tracking-[0.14em] text-[var(--charcoal)]/55 md:mt-16">
+          {prevProject ? (
+            <Link href={`/quilts/${prevProject.slug}`} className="max-w-[45%] truncate transition-colors hover:text-[var(--charcoal)]">
+              &larr; {prevProject.projectName}
+            </Link>
+          ) : (
+            <span />
+          )}
+          {nextProject ? (
+            <Link
+              href={`/quilts/${nextProject.slug}`}
+              className="max-w-[45%] truncate text-right transition-colors hover:text-[var(--charcoal)]"
+            >
+              {nextProject.projectName} &rarr;
+            </Link>
+          ) : (
+            <span />
+          )}
+        </nav>
       )}
     </article>
   );

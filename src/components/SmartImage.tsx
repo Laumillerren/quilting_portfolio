@@ -11,7 +11,7 @@ export default function SmartImage({ src, alt, className, fill, width, height, s
   if (src.startsWith("data:")) {
     if (fill) {
       // eslint-disable-next-line @next/next/no-img-element
-      return <img src={src} alt={alt} className={`absolute inset-0 h-full w-full object-cover ${className ?? ""}`} />;
+      return <img src={src} alt={alt} className={`absolute inset-0 h-full w-full ${className ?? ""}`} />;
     }
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={src} alt={alt} className={className} width={width} height={height} />;
