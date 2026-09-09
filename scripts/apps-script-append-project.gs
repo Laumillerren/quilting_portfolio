@@ -16,6 +16,10 @@
  * this file changes, since Apps Script Web Apps don't auto-update.
  */
 
+// The id from the sheet's URL — opened explicitly (instead of
+// SpreadsheetApp.getActiveSpreadsheet()) so this still works even if the
+// script isn't bound to the sheet as a container script.
+const SHEET_ID = "1QVGXhnL619-WDma8YTKsYEPSmeRaTuqOA0bLYAXarOQ";
 const SHEET_NAME = "Projects";
 
 function doPost(e) {
@@ -26,7 +30,7 @@ function doPost(e) {
     return jsonResponse({ ok: false, error: "Incorrect password" });
   }
 
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
   if (!sheet) {
     return jsonResponse({ ok: false, error: `No sheet tab named "${SHEET_NAME}"` });
   }
@@ -86,6 +90,14 @@ function updateRow(sheet, headers, fields, originalSlug) {
 
   sheet.getRange(rowIndex + 2, 1, 1, newRow.length).setValues([newRow]);
   return jsonResponse({ ok: true, slug: fields.slug || targetSlug });
+}
+
+// Apps Script Web Apps sometimes fetch the /exec URL via GET as part of
+// their own redirect handling, even for a client's POST request. Without a
+// doGet defined at all, that hop crashes with "Failed" in the executions
+// log — this just needs to exist and return something.
+function doGet() {
+  return jsonResponse({ ok: false, error: "This endpoint only accepts POST requests." });
 }
 
 function jsonResponse(body) {
