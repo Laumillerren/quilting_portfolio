@@ -1,11 +1,15 @@
 import { placeholderFabric } from "./placeholderFabric";
-import type { QuiltProject } from "./types";
+import type { FabricSwatch, QuiltProject } from "./types";
 
 function gallery(seed: string, count: number): string[] {
   return Array.from({ length: count }, (_, i) => placeholderFabric(`${seed}-gallery-${i}`));
 }
 
-const raw: Omit<QuiltProject, "coverImage" | "photoGallery">[] = [
+function swatches(seed: string, entries: Omit<FabricSwatch, "image">[]): FabricSwatch[] {
+  return entries.map((e, i) => ({ ...e, image: placeholderFabric(`${seed}-swatch-${i}`) }));
+}
+
+const raw: Omit<QuiltProject, "coverImage" | "photoGallery" | "fabrics">[] = [
   {
     id: "1",
     slug: "midnight-garden",
@@ -13,12 +17,16 @@ const raw: Omit<QuiltProject, "coverImage" | "photoGallery">[] = [
     status: "Finished",
     year: "2023",
     dateStarted: "March 2023",
+    dateCut: "April 2023",
+    dateTopFinished: "July 2023",
     dateFinished: "September 2023",
     quiltType: "Bed quilt, queen",
     dimensions: '92" x 96"',
     patternName: "Garden Trellis",
     patternDesigner: "Jen Kingwell",
     patternSource: "Quiltmania",
+    quilterName: "Lorena",
+    quiltingDesign: "Custom feather quilting, hand guided",
     mainFabric: "Kona Cotton Solids",
     fabricBrand: "Robert Kaufman",
     fabricDesigner: "—",
@@ -44,6 +52,7 @@ const raw: Omit<QuiltProject, "coverImage" | "photoGallery">[] = [
     patternName: "Courthouse Steps",
     patternDesigner: "Traditional",
     patternSource: "Family pattern",
+    quilterName: "Lorena",
     mainFabric: "Cotton shirting scraps",
     fabricBrand: "Mixed",
     batting: "Bamboo blend",
@@ -66,6 +75,7 @@ const raw: Omit<QuiltProject, "coverImage" | "photoGallery">[] = [
     dimensions: '40" x 40"',
     patternName: "Ohio Star Sampler",
     patternDesigner: "Lorena (original)",
+    quilterName: "Lorena",
     mainFabric: "Cotton prints, autumn palette",
     fabricBrand: "Moda",
     fabricCollection: "Farmstead",
@@ -107,6 +117,8 @@ const raw: Omit<QuiltProject, "coverImage" | "photoGallery">[] = [
     patternName: "Double Wedding Ring",
     patternDesigner: "Traditional",
     patternSource: "Grandmother's pattern pieces",
+    quilterName: "Lorena",
+    quiltingDesign: "Straight-line, quarter inch from seams",
     mainFabric: "Cotton solids and vintage prints",
     fabricBrand: "Mixed / vintage",
     batting: "Cotton",
@@ -239,6 +251,8 @@ const raw: Omit<QuiltProject, "coverImage" | "photoGallery">[] = [
     dimensions: '52" x 52"',
     patternName: "Courthouse Steps",
     patternDesigner: "Traditional",
+    quilterName: "Sent out — Prairie Longarm Co.",
+    quiltingDesign: "Edge-to-edge meander",
     mainFabric: "Linen and cotton solids",
     fabricBrand: "Robert Kaufman / Essex",
     batting: "Cotton",
@@ -272,10 +286,25 @@ const raw: Omit<QuiltProject, "coverImage" | "photoGallery">[] = [
   },
 ];
 
+const fabricsBySlug: Record<string, FabricSwatch[]> = {
+  "midnight-garden": swatches("midnight-garden", [
+    { fabricName: "Firelight", designer: "Alexia Marcelle Abegg", colorway: "Meadow" },
+    { fabricName: "Add It Up", designer: "Ruby Star Society", colorway: "Coral" },
+    { fabricName: "Kona Cotton Solid", designer: "Robert Kaufman", colorway: "Indigo" },
+    { fabricName: "Gingham", designer: "Robert Kaufman", colorway: "Pine" },
+    { fabricName: "Meadow Floral", designer: "Rifle Paper Co.", colorway: "Blush" },
+  ]),
+  "wedding-ring-for-margaret": swatches("wedding-ring-for-margaret", [
+    { fabricName: "Vintage Calico", designer: "Unknown / inherited", colorway: "Rose" },
+    { fabricName: "Kona Cotton Solid", designer: "Robert Kaufman", colorway: "Ivory" },
+  ]),
+};
+
 export const mockProjects: QuiltProject[] = raw.map((p) => ({
   ...p,
   coverImage: placeholderFabric(p.id),
   photoGallery: gallery(p.id, 4),
+  fabrics: fabricsBySlug[p.slug] ?? [],
 }));
 
 export function getMockProjectBySlug(slug: string): QuiltProject | undefined {

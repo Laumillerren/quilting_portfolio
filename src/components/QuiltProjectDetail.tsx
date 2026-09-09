@@ -65,9 +65,11 @@ export default function QuiltProjectDetail({
           <InfoRow label="Status" value={project.status} />
           <InfoRow label="Year" value={project.year} />
           <InfoRow label="Date Started" value={project.dateStarted} />
+          <InfoRow label="Date Cut" value={project.dateCut} />
+          <InfoRow label="Top Finished" value={project.dateTopFinished} />
           <InfoRow label="Date Finished" value={project.dateFinished} />
           <InfoRow label="Quilt Type" value={project.quiltType} />
-          <InfoRow label="Dimensions" value={project.dimensions} />
+          <InfoRow label="Quilt Size" value={project.dimensions} />
         </dl>
       </Section>
 
@@ -96,6 +98,15 @@ export default function QuiltProjectDetail({
         </Section>
       )}
 
+      {(project.quilterName || project.quiltingDesign) && (
+        <Section title="Quilting">
+          <dl>
+            <InfoRow label="Quilter" value={project.quilterName} />
+            <InfoRow label="Quilting Design" value={project.quiltingDesign} />
+          </dl>
+        </Section>
+      )}
+
       <Section title="Fabrics &amp; Materials">
         <dl>
           <InfoRow label="Main Fabric" value={project.mainFabric} />
@@ -107,6 +118,31 @@ export default function QuiltProjectDetail({
           <InfoRow label="Binding" value={project.binding} />
         </dl>
       </Section>
+
+      {project.fabrics.length > 0 && (
+        <Section title="Fabric Swatches">
+          <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-5">
+            {project.fabrics.map((f, i) => {
+              const src = f.image ? resolveImageUrl(f.image) : null;
+              return (
+                <div key={i}>
+                  <div className="relative aspect-square overflow-hidden bg-[var(--cream)]">
+                    {src && <SmartImage src={src} alt={f.fabricName} fill sizes="140px" className="object-cover" />}
+                  </div>
+                  <p className="mt-2 font-serif text-[13px] italic leading-snug text-[var(--charcoal)]">
+                    {f.fabricName}
+                  </p>
+                  {(f.designer || f.colorway) && (
+                    <p className="text-[10px] uppercase tracking-[0.08em] text-[var(--charcoal)]/50">
+                      {[f.designer, f.colorway].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      )}
 
       {project.techniques.length > 0 && (
         <Section title="Techniques">
