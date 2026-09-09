@@ -1,5 +1,5 @@
 /**
- * Deploy target for the site's "add a project" admin form.
+ * Deploy target for the site's admin "add / edit a project" forms.
  *
  * Setup (one-time, done inside Google Sheets — not this repo):
  *   1. Open the Projects sheet -> Extensions -> Apps Script.
@@ -23,12 +23,12 @@ function doPost(e) {
   const expectedSecret = PropertiesService.getScriptProperties().getProperty("ADMIN_SECRET");
 
   if (!expectedSecret || payload.secret !== expectedSecret) {
-    return jsonResponse({ ok: false, error: "Incorrect password" }, 401);
+    return jsonResponse({ ok: false, error: "Incorrect password" });
   }
 
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   if (!sheet) {
-    return jsonResponse({ ok: false, error: `No sheet tab named "${SHEET_NAME}"` }, 500);
+    return jsonResponse({ ok: false, error: `No sheet tab named "${SHEET_NAME}"` });
   }
 
   const headers = sheet
@@ -38,6 +38,13 @@ function doPost(e) {
 
   const fields = payload.fields || {};
 
+  if (payload.action === "update") {
+    return updateRow(sheet, headers, fields, payload.originalSlug);
+  }
+  return createRow(sheet, headers, fields);
+}
+
+function createRow(sheet, headers, fields) {
   const idColumn = headers.indexOf("id");
   if (idColumn !== -1 && !fields.id) {
     fields.id = String(sheet.getLastRow()); // header row is 1, so this is the count of existing data rows + 1
@@ -49,11 +56,39 @@ function doPost(e) {
   });
 
   sheet.appendRow(row);
-
   return jsonResponse({ ok: true, slug: fields.slug });
 }
 
-function jsonResponse(body, status) {
+function updateRow(sheet, headers, fields, originalSlug) {
+  const slugColumn = headers.indexOf("slug");
+  if (slugColumn === -1) {
+    return jsonResponse({ ok: false, error: 'No "slug" column found' });
+  }
+
+  const dataRowCount = Math.max(sheet.getLastRow() - 1, 0);
+  const values = dataRowCount > 0 ? sheet.getRange(2, 1, dataRowCount, sheet.getLastColumn()).getValues() : [];
+
+  const targetSlug = String(originalSlug || "").trim();
+  const rowIndex = values.findIndex((row) => String(row[slugColumn]).trim() === targetSlug);
+
+  if (rowIndex === -1) {
+    return jsonResponse({ ok: false, error: `No project found with slug "${targetSlug}"` });
+  }
+
+  const existingRow = values[rowIndex];
+  const newRow = headers.map((header, i) => {
+    // Only overwrite columns the form actually manages — leave any other
+    // column (a legacy field, something added directly in the sheet) as-is.
+    if (!Object.prototype.hasOwnProperty.call(fields, header)) return existingRow[i];
+    const value = fields[header];
+    return value === undefined || value === null ? "" : value;
+  });
+
+  sheet.getRange(rowIndex + 2, 1, 1, newRow.length).setValues([newRow]);
+  return jsonResponse({ ok: true, slug: fields.slug || targetSlug });
+}
+
+function jsonResponse(body) {
   const output = ContentService.createTextOutput(JSON.stringify(body));
   output.setMimeType(ContentService.MimeType.JSON);
   return output;
